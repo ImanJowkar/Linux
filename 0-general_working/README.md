@@ -143,3 +143,92 @@ grep -A 3 -B 4 "pattern" /etc/..            # show 3 line after match and 4 line
 
 
 ```
+
+# comparing files
+
+```
+
+# we have three way to compare files in linux: 1- cmp, 2- diff, 3- sha256sum or other hash function
+
+cmp file1 file2
+echo $? # if return 1, it means not eqal
+        # if return 0, it means eqal
+
+sha256sum a b   
+
+diff file1 file2            # diff only used for files
+diff -B file1 file2         # ignore blank line
+diff -w a b                 # ignore space
+diff -i a b                 # case insensitive
+diff -y a b                 # pretty output
+
+
+
+
+```
+
+
+## hard link and soft link
+
+```
+ln file1.txt file2.txt          # hard link
+
+# hard link only used for files
+
+ls -s file1.txt file2.txt       # soft link
+
+
+```
+
+
+# Process management
+
+```
+
+ps
+ps -e
+ps -f
+ps -ef
+
+ps -f -u root           # only show root process
+
+ps aux --sort=%mem
+ps aux --sort=-%cpu
+
+
+pgrep python3
+pgrep sshd                  # get process id
+
+pgrep -l sshd               # get process id with service name
+
+
+
+
+
+pidof sshd
+pidof chrome
+
+
+
+nohub ./app.sh                          # or we can use tmux
+
+
+```
+
+## how to secure ssh
+
+```
+
+1 - change default port from 22 to something else
+2 - disable root login
+3 - allow required user to connect to server via ssh
+4 - enable iptables from specific IP
+5 - use ssh version2
+6 - ClientAliveInterval 300 and clientAliveCountMax 0
+
+
+
+
+
+
+```
