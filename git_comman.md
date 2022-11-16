@@ -51,6 +51,13 @@ git restore --source=HEAD~4 myfile.txt
 ```
 # git reset allow us to remove commits and reset the branch
 
+```
+
+# git stash
+```
+git stash
+git stash pop
+
 
 
 ```
