@@ -20,4 +20,37 @@ git switch master
 git merge develop
 
 
+
+```
+## git checkout
+```
+# git checkout
+# this command can work to switch between commit, branch, files 
+
+git checkout commit_hash
+
+
+```
+
+# git restore
+```
+# git restore used for restore a specific file from previous commit
+git restore --source=1fbcb2c myfile.txt
+git add .
+git commit -m "restored myfile form '1fbcb2c' commit "
+
+git restore --source=HEAD~4 myfile.txt
+
+# also used for back a file to begining of a commit
+
+```
+
+
+
+# git reset
+```
+# git reset allow us to remove commits and reset the branch
+
+
+
 ```
