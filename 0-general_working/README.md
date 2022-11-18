@@ -324,4 +324,24 @@ sudo rsync -av /etc/ /home/user/etc-backup              # if target directory do
 ```
 
 
-# 
+# Nmap
+nmap is a network discovery and security auditing tool, there are a variety scans that can be perform nmap, TCP SYN scan is the default and most popular scan option for good reason
+
+```
+sudo apt install nmap  # if you want to install nmap in windows you can install zenmap which is a gui for nmap
+
+sudo nmap IP_address
+sudo nmap -sS IP_address
+
+# by default nmap scan most common 1000 port for each protocol
+nmap -p 22,50000 -sV IP_address
+
+# if you want to sacn all port
+nmap -p- IP_address
+
+
+# for UDP scan
+namp -sU localhost
+
+
+```
