@@ -9,6 +9,9 @@ G           # go to the end of the file
 shift+A     # go to the end of a specefic line
 0           # go to the begining of a specific line
 5G          # go to line 5
+ctrl + r    # redo
+e           # jump forwards to the end of a word
+ge          # jump backward to the end of a word
 ```
 
 #### vim option
@@ -62,12 +65,54 @@ chmod g=rx file.txt
 
 
 
+R       W       X
+
+2^2     2^1     2^0
+
+chmod 724 file > user: RWX, group: W, Other: R
 
 
 
+# umask denfine default permision for a file, umask apply to a directory and after that any file we create on that directory got the umask permision
+
+
+R       W       X
+0       0       0
+
+
+R       -       -
+0       2^1     2^0     >> 3
+
+umask 113 dirctory_1   >>   RW-RW-R--
+
+# for security reasons it cannot be set x permision with umask
+
+
+
+
+
+# Special Permission: 
+SUID
+SGID
+StickyBit
 
 
 ```
+
+# modules 
+```
+lsmod                   # print all modules which already added to kernel
+modprobe                # add module and requiremnt modules to kernel
+insmod                  # only add module and can't load requirement modules
+rmmod                   # remove a module from a kernel
+
+# if you want to permenent loaded modules, add modules to "/etc/modules-load.d"
+
+
+```
+
+
+
 
 
 # file system
@@ -227,8 +272,56 @@ nohub ./app.sh                          # or we can use tmux
 6 - ClientAliveInterval 300 and clientAliveCountMax 0
 
 
+```
+# tar and zip
 
+```
+tar -cvf backup.tar file1 file2 file3                   # tar the files
+tar -tvf backup.tar                                     # only show which file is in the backup.tar
+tar -xvf backup.tar                                     # untar the file
+
+
+tar -zcvf backup.tar.gz file2 file3
+tar -zxvf backup.tar.gz
+
+
+```
+
+# compression
+[refrence](https://www.rootusers.com/gzip-vs-bzip2-vs-xz-performance-comparison/) for comparing these three method for compress files.
+**tip**: before compres any file, first use tar and then use compres method
+```
+gzip -c file.tar > file.tar.gz                  # compression rate 60~70 %  > 100GB > 40 ~ 30 GB
+gzip -d file.tar.gz                             # uncompress the file
+
+
+sudo apt install bzip2
+bzip2 file.tar
+bzip2 -d file.tar.bz2
+
+
+xz file.tar
+xz -d file.xz
+
+```
+
+# SCP (Secure COPY)
+```
+scp -p 22 file.tar user@172.16.2.2:/home/user/backup/                           # for scp a file or tar file
+scp -r -p 22 dirctory user@172.16.2.2:/home/user/backup/                        # for scp a dirctory
+
+scp user@172.16.2.2:/home/user/backup/backup.tar user1@172.16.2.4:/home/user1/backup/   # scp from a server to another server
+
+# you can use WinSCP for transfer file between linux and Windows 
+
+
+
+
+sudo rsync -av /etc/ /home/user/etc-backup              # if target directory does not exist, rsync will be create for us
 
 
 
 ```
+
+
+# 
