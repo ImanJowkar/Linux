@@ -101,10 +101,12 @@ StickyBit
 
 # modules 
 ```
-lsmod                   # print all modules which already added to kernel
-modprobe                # add module and requiremnt modules to kernel
-insmod                  # only add module and can't load requirement modules
-rmmod                   # remove a module from a kernel
+lsmod module_name                   # print all modules which already added to kernel
+modprobe module_name                # add module and requiremnt modules to kernel
+modprobe -r module_name             # remove a modlue and all dependencies
+insmod module_name                  # only add module and can't load requirement modules
+rmmod module_name                   # remove a module from a kernel
+modinfo module_name                 # get info of modules
 
 # if you want to permenent loaded modules, add modules to "/etc/modules-load.d"
 
@@ -345,3 +347,22 @@ namp -sU localhost
 
 
 ```
+# lvm 
+
+```
+swapon -s               # show list of swaps
+mount -a                # apply changes in /etc/fstab
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
