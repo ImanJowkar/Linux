@@ -101,7 +101,7 @@ StickyBit
 
 # modules 
 ```
-lsmod module_name                   # print all modules which already added to kernel
+lsmod                               # print all modules which already added to kernel
 modprobe module_name                # add module and requiremnt modules to kernel
 modprobe -r module_name             # remove a modlue and all dependencies
 insmod module_name                  # only add module and can't load requirement modules
@@ -135,7 +135,7 @@ who | tee -a who.txt                   # show in terminal and append to a file
 # finding file and directories
 
 ```
-# we have to option for finding a file in linux: 1- locate, 2-find
+# we have two option for finding a file in linux: 1-locate, 2-find
 # 'locate' is faster than a 'find', because it use a database which we need update it constantly
 
 
@@ -195,7 +195,7 @@ grep -A 3 -B 4 "pattern" /etc/..            # show 3 line after match and 4 line
 
 ```
 
-# we have three way to compare files in linux: 1- cmp, 2- diff, 3- sha256sum or other hash function
+# we have three way to compare files in linux: 1-cmp, 2-diff, 3-sha256sum or other hash function
 
 cmp file1 file2
 echo $? # if return 1, it means not eqal
@@ -268,7 +268,7 @@ nohub ./app.sh                          # or we can use tmux
 
 1 - change default port from 22 to something else
 2 - disable root login
-3 - allow required user to connect to server via ssh
+3 - allowed only required user to connect to server via ssh
 4 - enable iptables from specific IP
 5 - use ssh version2
 6 - ClientAliveInterval 300 and clientAliveCountMax 0
@@ -330,7 +330,7 @@ sudo rsync -av /etc/ /home/user/etc-backup              # if target directory do
 nmap is a network discovery and security auditing tool, there are a variety scans that can be perform nmap, TCP SYN scan is the default and most popular scan option for good reason
 
 ```
-sudo apt install nmap  # if you want to install nmap in windows you can install zenmap which is a gui for nmap
+sudo apt install nmap  # if you want to install nmap in windows you can install zenmap which is a GUI for nmap
 
 sudo nmap IP_address
 sudo nmap -sS IP_address
@@ -352,8 +352,6 @@ namp -sU localhost
 ```
 swapon -s               # show list of swaps
 mount -a                # apply changes in /etc/fstab
-
-
 
 ```
 
