@@ -21,7 +21,7 @@ Port 2285
 PermitRootLogin no
 
 # before this add public-key
-asswordAuthentication no
+PasswordAuthentication no
 
 AllowUsers kuber ali jack
 ----
