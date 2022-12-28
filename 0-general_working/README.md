@@ -347,9 +347,53 @@ namp -sU localhost
 
 
 ```
-# lvm 
+# lvm (logical volume management)
 
 ```
+# fdisk /dev/sdb
+# note that change partion to linux lvm 
+
+pvcreate /dev/sdb1
+pvs # list pv
+
+vgcreate myvg /dev/sdb1
+vgs # list vg
+
+lvcreate -L 1020 myvg --name mylv01
+lvs  # list lv
+
+mkfs.ext4 /dev/mapper/myvg-mylv01
+mount /dev/mapper/myvg-mylv01 /test
+
+lsblk
+df -h
+blkid
+
+
+partprobe   # 
+
+
+
+# for extend a vg
+
+fdisk /dev/sdc
+pvcreate /dev/sdc2
+pvs
+
+vgextend myvg /dev/sdc2
+pvs
+vgs
+
+
+lvextend -L +3G /dev/mapper/myvg-mylv01
+
+resize2fs /dev/mapper/myvg-mylv01	# if file system is ext2, ext3, ext4
+xfs_growfs /dev/mapper/myvg-mylv01	# if file system is xfs
+
+
+
+
+
 swapon -s               # show list of swaps
 mount -a                # apply changes in /etc/fstab
 
