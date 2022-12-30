@@ -348,47 +348,188 @@ namp -sU localhost
 
 ```
 # lvm (logical volume management)
-
+[ref](https://www.tecmint.com/create-lvm-storage-in-linux/)
 ```
+fdisk -l
+df -TH
 # fdisk /dev/sdb
-# note that change partion to linux lvm 
+# note that change partion type to linux lvm(8e) 
 
 pvcreate /dev/sdb1
 pvs # list pv
 
 vgcreate myvg /dev/sdb1
+vgextend myvg /dev/sdc2
+vgextend myvg /dev/sdc3
+
 vgs # list vg
 
-lvcreate -L 1020 myvg --name mylv01
+
+lvcreate -L +4G myvg --name mylv01
 lvs  # list lv
 
 mkfs.ext4 /dev/mapper/myvg-mylv01
 mount /dev/mapper/myvg-mylv01 /test
 
 lsblk
-df -h
+df -TH
 blkid
 
 
 partprobe   # 
 
 
-
-# for extend a vg
-
-fdisk /dev/sdc
-pvcreate /dev/sdc2
-pvs
-
-vgextend myvg /dev/sdc2
-pvs
+--------------------------------
+# for extend a lv
 vgs
-
-
 lvextend -L +3G /dev/mapper/myvg-mylv01
 
 resize2fs /dev/mapper/myvg-mylv01	# if file system is ext2, ext3, ext4
 xfs_growfs /dev/mapper/myvg-mylv01	# if file system is xfs
+
+
+lvdisplay
+vgdisplay
+
+
+----------------------------
+# remove lv
+umount /LVM
+lvremove /dev/mapper/myvg-lv01
+vgremove myvg
+
+pvremove /dev/sdb1
+pvremove /dev/sdb2
+pvremove /dev/sdc1
+pvremove /dev/sdc2
+
+
+
+-----------------------------
+# full example1
+
+pvcreate /dev/sdb1
+pvcreate /dev/sdb2
+pvcreate /dev/sdc1
+pvcreate /dev/sdc2
+
+
+vgcreate myvg /dev/sdb1
+vgextend myvg /dev/sdb2
+vgextend myvg /dev/sdc1
+vgextend myvg /dev/sdc2
+vgs
+
+
+lvcreate -l 74%free myvg --name lv01
+
+mkfs.ntfs /dev/mapper/myvg-lv01
+
+mount /dev/mapper/myvg-lv01 /LVM
+
+
+
+---------------------------------
+# full example2
+
+pvcreate /dev/sdb1
+pvcreate /dev/sdb2
+pvcreate /dev/sdc1
+pvcreate /dev/sdc2
+
+vgcreate -s 32M myvg /dev/sdb1 /dev/sdb2 /dev/sdc1 /dev/sdc2 # PE size 32MB
+
+
+bc      # terminal calculator
+
+lvcreate -L 6G -n mylv1 myvg
+lvcreate -L 6G -n mylv2 myvg
+lvcreate -L 6G -n mylv3 myvg
+
+# format lvs
+
+mkfs.ext4 /dev/myvg/mylv1
+mkfs.ext4 /dev/myvg/mylv2
+mkfs.ext4 /dev/myvg/mylv3
+
+
+mount /dev/myvg/mylv1 /LVM1
+mount /dev/myvg/mylv2 /LVM2
+mount /dev/myvg/mylv3 /LVM3
+
+df -TH
+
+
+cat /etc/mtab
+
+# copy and paste in /etc/fstab, change rw to defaults
+/dev/mapper/myvg-mylv1 /LVM1 ext4 defaults 0 0
+/dev/mapper/myvg-mylv2 /LVM2 ext4 defaults 0 0
+/dev/mapper/myvg-mylv3 /LVM3 ext4 defaults 0 0
+
+
+ mount -av
+
+pvscan
+
+vgdisplay
+lvextend -l +331 /dev/myvg/mylv1  # +331 is PE size
+resize2fs /dev/myvg/mylv1
+lvdisplay
+df -TH
+lsblk
+```
+
+## Reducing Logical Volume (LVM)
+
+* Before starting, it is always good to backup the data, so that it will not be a headache if something goes wrong.
+* To Reduce a logical volume there are 5 steps needed to be done very carefully.
+* While extending a volume we can extend it while the volume under mount status (online), but for reduce we must need to unmount the file system before reducing.
+
+Let’s wee what are the 5 steps below: \
+* unmount the file system for reducing
+* Check the file system after unmount.
+* Reduce the file system
+* Reduce the Logical Volume size than Current size
+* Recheck the file system for error
+* Remount the file-system back to stage
+
+```
+
+# reduse mylv01
+
+df -TH
+umount -v /LVM1
+e2fsck -ff /dev/myvg/mylv1
+resize2fs /dev/myvg/mylv1 10G
+lvreduce -L -6G /dev/myvg/mylv1
+resize2fs /dev/myvg/mylv1
+mount -a
+lvs 
+vgs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -397,14 +538,6 @@ xfs_growfs /dev/mapper/myvg-mylv01	# if file system is xfs
 swapon -s               # show list of swaps
 mount -a                # apply changes in /etc/fstab
 
+
+
 ```
-
-
-
-
-
-
-
-
-
-
