@@ -546,7 +546,15 @@ mount -a                # apply changes in /etc/fstab
 # Nmap for searching IP in subnet
 
 ```
-nmap -sP 192.168.30.0/24
+nmap -sP 172.16.2.0/24
+
+
+```
+
+## Working with shell
+```
+
+
 
 
 ```
