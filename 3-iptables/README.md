@@ -112,3 +112,42 @@ iptables-save > /etc/iptables/rules.v4
 
 
 ```
+
+# Source and Destination
+
+```
+iptables -A INPUT -s 192.168.0.20 -j DROP
+iptables -t filter -A INPUT -d 178.16.0.0/16 -j DROP
+
+
+
+# range 
+
+iptables -t filter -A INPUT -p tcp --dport 80 -m iprange --src-range 172.16.2.1-172.16.2.16 -j DROP
+
+iptables -m addrtype --help
+
+iptables -A INPUT -p tcp -m multiport --dport 80,443 -j DROP
+
+
+```
+## Interface
+```
+iptables -A INPUT -i enp0s3 -j ACCEPT
+iptables -A INPUT -i lo -j ACCEPT
+
+
+iptables -A INPUT ! -s 172.16.0.5 -p tcp --dport 443 -j DROP  # close 443 over any IP but not 172.16.0.5
+
+
+
+
+
+
+
+
+
+
+
+```
+

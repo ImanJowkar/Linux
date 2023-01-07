@@ -350,97 +350,129 @@ namp -sU localhost
 # lvm (logical volume management)
 [ref](https://www.tecmint.com/create-lvm-storage-in-linux/)
 ```
-fdisk -l
-df -TH
-# fdisk /dev/sdb
-# note that change partion type to linux lvm(8e) 
-
-pvcreate /dev/sdb1
-pvs # list pv
-
-vgcreate myvg /dev/sdb1
-vgextend myvg /dev/sdc2
-vgextend myvg /dev/sdc3
-
-vgs # list vg
+bc      # terminal calculator
 
 
-lvcreate -L +4G myvg --name mylv01
-lvs  # list lv
-
-mkfs.ext4 /dev/mapper/myvg-mylv01
-mount /dev/mapper/myvg-mylv01 /test
-
-lsblk
-df -TH
-blkid
-
-
-partprobe   # 
-
-
---------------------------------
-# for extend a lv
+cat /proc/swaps
+swapon -s
+pvcreate /dev/sd[bc][12]
+pvs
+vgcreate myvg /dev/sd[bc][12]
 vgs
-lvextend -L +3G /dev/mapper/myvg-mylv01
-
-resize2fs /dev/mapper/myvg-mylv01	# if file system is ext2, ext3, ext4
-xfs_growfs /dev/mapper/myvg-mylv01	# if file system is xfs
 
 
-lvdisplay
-vgdisplay
+lvcreate -n lv1 -L 6gib myvg
+lvcreate -n lv2 -L 9gib myvg
+lvcreate -n lv3 -l 100%FREE myvg
+ll /dev/myvg/
 
 
-----------------------------
-# remove lv
-umount /LVM
-lvremove /dev/mapper/myvg-lv01
-vgremove myvg
-
-pvremove /dev/sdb1
-pvremove /dev/sdb2
-pvremove /dev/sdc1
-pvremove /dev/sdc2
+mkfs.ext4 /dev/myvg/lv1
+mkfs.ext4 /dev/myvg/lv2
+mkfs.ext4 /dev/myvg/lv3
 
 
+# open in  vim /etc/fstab
+/dev/myvg/lv1   /LVM1   ext4    defaults        0       1
+/dev/myvg/lv2   /LVM2   ext4    defaults        0       1
+/dev/myvg/lv3   /LVM3   ext4    defaults        0       1
 
------------------------------
+mount -a
+
+
+sha1sum LVM*/*.txt >  checksum
+sha1sum LVM*/*.txt -c checksum
+
+
+
+# extend vg
+fdisk /dev/sdd
+pvcreate /dev/sdd1
+vgextend myvg /dev/sdd1
+vgreduce myvg /dev/sdd1
+vgdisplay myvg
+vgrename myvg new-name
+lvs
+
+
+
+
+# extend lv
+lvextend -L +4G /dev/myvg/lv2
+lvextend -l +100%FREE /dev/myvg/lv1
+
+resize2fs /dev/myvg/lv2
+resize2fs /dev/myvg/lv1
+
+
+## Reducing Logical Volume (LV)
+
+* Before starting, it is always good to backup the data, so that it will not be a headache if something goes wrong.
+* To Reduce a logical volume there are 5 steps needed to be done very carefully.
+* While extending a volume we can extend it while the volume under mount status (online), but for reduce we must need to unmount the file system before reducing.
+
+Let’s see what are the 5 steps below: \
+* unmount the file system for reducing
+* Check the file system after unmount.
+* Reduce the file system
+* Reduce the Logical Volume size than Current size
+* Recheck the file system for error
+* Remount the file-system back to stage
+
+df -TH
+umount -v /LVM1
+e2fsck -ff /dev/myvg/mylv1
+echo $?
+
+resize2fs /dev/myvg/mylv1 10G
+echo $?
+lvreduce -L 2G /dev/myvg/lv1 # reduce to 2GB
+echo $?
+resize2fs /dev/myvg/mylv1
+# xfs_growfs /dev/myvg/lv1	# if file system is xfs
+
+echo $?
+mount -a
+lvs 
+vgs
+
+
+
+# reduce vg
+vgreduce myvg /dev/sdd1
+
+
+# remove pv
+pvremove /dev/sdd1
+
+partprobe
+
+----------------------------------------------------------------------------
 # full example1
 
-pvcreate /dev/sdb1
-pvcreate /dev/sdb2
-pvcreate /dev/sdc1
-pvcreate /dev/sdc2
+pvcreate /dev/sd[bc][12]
+pvs
 
-
-vgcreate myvg /dev/sdb1
-vgextend myvg /dev/sdb2
-vgextend myvg /dev/sdc1
-vgextend myvg /dev/sdc2
+vgcreate myvg /dev/sd[bc][12]
 vgs
 
 
 lvcreate -l 74%free myvg --name lv01
 
-mkfs.ntfs /dev/mapper/myvg-lv01
-
-mount /dev/mapper/myvg-lv01 /LVM
-
+mkfs.ntfs /dev/myvg/lv01
+mount /dev/myvg/lv01 /LVM
 
 
----------------------------------
+
+------------------------------------------------------------------------
 # full example2
 
-pvcreate /dev/sdb1
-pvcreate /dev/sdb2
-pvcreate /dev/sdc1
-pvcreate /dev/sdc2
+pvcreate /dev/sd[bc][12]
 
-vgcreate -s 32M myvg /dev/sdb1 /dev/sdb2 /dev/sdc1 /dev/sdc2 # PE size 32MB
+vgcreate -s 32M myvg /dev/sd[bc][12] # PE size 32MB
+vgs
 
 
-bc      # terminal calculator
 
 lvcreate -L 6G -n mylv1 myvg
 lvcreate -L 6G -n mylv2 myvg
@@ -480,47 +512,37 @@ df -TH
 lsblk
 ```
 
-## Reducing Logical Volume (LVM)
 
-* Before starting, it is always good to backup the data, so that it will not be a headache if something goes wrong.
-* To Reduce a logical volume there are 5 steps needed to be done very carefully.
-* While extending a volume we can extend it while the volume under mount status (online), but for reduce we must need to unmount the file system before reducing.
-
-Let’s wee what are the 5 steps below: \
-* unmount the file system for reducing
-* Check the file system after unmount.
-* Reduce the file system
-* Reduce the Logical Volume size than Current size
-* Recheck the file system for error
-* Remount the file-system back to stage
-
+# lvm snapshot
 ```
 
-# reduse mylv01
 
+lvcreate --size 1G --snapshot --name lv1-snapshot /dev/myvg/lv1
+
+# lvcreate -L 1GB -s -n lv1-snapshot /dev/myvg/lv1
+
+lvs
+
+# for remove
+lvremove /dev/myvg/lv1-snapshot
+
+# be-causon that the snapshot doesn't overflow, if overflow happend all data will crashed.
+
+# It is good to create a snapshot with the exact size.
+for example if lv has 20G , then create a snapshot with 20G size.
+
+# resize snap shot before overflow
+lvextend -L +2G /dev/myvg/lv1-snapshot
+
+
+# resotore snapshot
+
+
+umount /LVM1
 df -TH
-umount -v /LVM1
-e2fsck -ff /dev/myvg/mylv1
-resize2fs /dev/myvg/mylv1 10G
-lvreduce -L -6G /dev/myvg/mylv1
-resize2fs /dev/myvg/mylv1
-mount -a
-lvs 
-vgs
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+lvconvert --merge /dev/myvg/lv1-snapshot
+# After the merge is completed, the snapshot volume will be removed automatically.
 
 
 
@@ -543,18 +565,13 @@ mount -a                # apply changes in /etc/fstab
 ```
 
 
+
+
+
 # Nmap for searching IP in subnet
 
 ```
 nmap -sP 172.16.2.0/24
-
-
-```
-
-## Working with shell
-```
-
-
 
 
 ```
