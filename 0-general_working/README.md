@@ -575,3 +575,44 @@ nmap -sP 172.16.2.0/24
 
 
 ```
+
+
+
+
+ add disk without restart 
+```
+
+echo "- - -" | tee /sys/class/scsi_host/host*/scan
+
+```
+
+
+
+# How to install PostgreSQL on ubuntu22
+(ref)[https://computingforgeeks.com/install-postgresql-14-on-ubuntu-jammy-jellyfish/]
+```
+apt update
+
+sudo apt install vim curl wget gpg gnupg2 software-properties-common apt-transport-https lsb-release ca-certificates
+
+# add postgresql repo: 
+
+curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+apt update
+
+apt install postgresql-14
+
+systemctl status postgresql@14-main.service
+
+
+sudo -u postgres psql -c "SELECT version();"  # get postgres version
+
+su postgres # switch to postgres user
+psql
+
+
+
+
+
+```
